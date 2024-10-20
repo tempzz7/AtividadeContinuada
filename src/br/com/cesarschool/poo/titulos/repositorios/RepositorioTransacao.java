@@ -15,16 +15,43 @@ public class RepositorioTransacao {
     private RepositorioAcao repoAcao = new RepositorioAcao();
     private RepositorioTituloDivida repoTitulo = new RepositorioTituloDivida();
 
+    // Método para incluir uma transação no repositório
     public boolean incluir(Transacao transacao) {
         List<Transacao> transacoes = lerArquivo();
         transacoes.add(transacao);
         return gravarArquivo(transacoes);
     }
 
+    // Método para buscar todas as transações
     public List<Transacao> buscarTodas() {
         return lerArquivo();
     }
 
+    // Método para buscar transações onde a entidade é credora
+    public List<Transacao> buscarPorEntidadeCredora(int identificadorEntidadeCredora) {
+        List<Transacao> transacoes = lerArquivo();
+        List<Transacao> transacoesCredoras = new ArrayList<>();
+        for (Transacao transacao : transacoes) {
+            if (transacao.getEntidadeCredito().getIdentificador() == identificadorEntidadeCredora) {
+                transacoesCredoras.add(transacao);
+            }
+        }
+        return transacoesCredoras;
+    }
+
+    // Método para buscar transações onde a entidade é devedora
+    public List<Transacao> buscarPorEntidadeDevedora(int identificadorEntidadeDevedora) {
+        List<Transacao> transacoes = lerArquivo();
+        List<Transacao> transacoesDevedoras = new ArrayList<>();
+        for (Transacao transacao : transacoes) {
+            if (transacao.getEntidadeDebito().getIdentificador() == identificadorEntidadeDevedora) {
+                transacoesDevedoras.add(transacao);
+            }
+        }
+        return transacoesDevedoras;
+    }
+
+    // Método privado para ler o arquivo de transações
     private List<Transacao> lerArquivo() {
         List<Transacao> transacoes = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
@@ -52,6 +79,7 @@ public class RepositorioTransacao {
         return transacoes;
     }
 
+    // Método privado para gravar as transações no arquivo
     private boolean gravarArquivo(List<Transacao> transacoes) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
             for (Transacao transacao : transacoes) {
