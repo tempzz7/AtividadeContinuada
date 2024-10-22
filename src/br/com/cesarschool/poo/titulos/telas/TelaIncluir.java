@@ -2,117 +2,140 @@ package br.com.cesarschool.poo.titulos.telas;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
-
-
 import br.com.cesarschool.poo.titulos.entidades.EntidadeOperadora;
 import br.com.cesarschool.poo.titulos.repositorios.RepositorioEntidadeOperadora;
 
 public class TelaIncluir {
-
-    JFrame frame = new JFrame();
-
-    JLabel lblId = new JLabel("Id: ");
-    JTextField textFieldId = new JTextField();
-
-    JLabel lblNome = new JLabel("Nome: ");
-    JTextField textFieldNome = new JTextField();
-
-    JLabel lblAutorizadoAcao = new JLabel("Autorizado Ação: ");
-    String[] tipos = { "True", "False"};
-    JComboBox<String> comboBoxTipo = new JComboBox<>(tipos);
-
-    JLabel lblSaldoAcao = new JLabel("Saldo Ação: ");
-    JTextField textFieldsaldoAcao = new JTextField();
-
-    JLabel lblSaldoTituloDivida = new JLabel("Saldo Título Dívida: ");
-    JTextField textFieldsaldoTituloDivida = new JTextField();
-
-    JButton btnIncluir = new JButton("Incluir");
-    JButton btnVoltar = new JButton("Voltar");
-    JButton btnLimpar = new JButton("Limpar");
+    private JFrame frame;
+    private JTextField textFieldId;
+    private JTextField textFieldNome;
+    private JComboBox<String> comboBoxTipo;
+    private JTextField textFieldsaldoAcao;
+    private JTextField textFieldsaldoTituloDivida;
 
     public TelaIncluir(){
-
         initialize();
     }
 
     private void initialize (){
-        frame.setTitle("Incluir Entidade Operação");
-        frame.setSize(600, 500);
-        frame.setLayout(null);
+        frame = new JFrame("Incluir Entidade Operadora");
+        frame.setSize(600, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        lblId.setBounds(10, 20, 80, 25);
-        frame.add(lblId);
-        textFieldId.setBounds(150, 20, 165, 25);
-        frame.add(textFieldId);
+        JLabel lblId = new JLabel("Id: ");
+        textFieldId = new JTextField();
 
-        lblNome.setBounds(10, 50, 80, 25);
-        frame.add(lblNome);
-        textFieldNome.setBounds(150, 50, 165, 25);
-        frame.add(textFieldNome);
+        JLabel lblNome = new JLabel("Nome: ");
+        textFieldNome = new JTextField();
 
-        lblAutorizadoAcao.setBounds(10, 80, 80, 25);
-        frame.add(lblAutorizadoAcao);
-        comboBoxTipo.setBounds(150, 80, 80, 25);
-        frame.add(comboBoxTipo);
+        JLabel lblAutorizadoAcao = new JLabel("Autorizado Ação: ");
+        String[] tipos = { "True", "False"};
+        comboBoxTipo = new JComboBox<>(tipos);
 
-        lblSaldoAcao.setBounds(10, 110, 80, 25);
-        frame.add(lblSaldoAcao);
-        textFieldsaldoAcao.setBounds(150, 110, 165, 25);
-        frame.add(textFieldsaldoAcao);
+        JLabel lblSaldoAcao = new JLabel("Saldo Ação: ");
+        textFieldsaldoAcao = new JTextField();
 
+        JLabel lblSaldoTituloDivida = new JLabel("Saldo Título Dívida: ");
+        textFieldsaldoTituloDivida = new JTextField();
 
-        lblSaldoTituloDivida.setBounds(10, 140, 80, 25);
-        frame.add(lblSaldoTituloDivida);
-        textFieldsaldoTituloDivida.setBounds(150, 140, 165, 25);
-        frame.add(textFieldsaldoTituloDivida);
+        JButton btnIncluir = new JButton("Incluir");
+        btnIncluir.addActionListener(this::incluir);
 
+        JButton btnVoltar = new JButton("Voltar");
+        btnVoltar.addActionListener(this::voltar);
 
-        btnIncluir.setBounds(75, 200, 100, 25);
-        frame.add(btnIncluir);
-        btnIncluir.addActionListener(e -> incluir(e));
+        JButton btnLimpar = new JButton("Limpar");
+        btnLimpar.addActionListener(this::limpar);
 
-        btnVoltar.setBounds(200, 200, 100, 25);
-        frame.add(btnVoltar);
-        btnVoltar.addActionListener(e -> voltar(e));
+        GroupLayout layout = new GroupLayout(frame.getContentPane());
+        frame.getContentPane().setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
 
-        btnLimpar.setBounds(325, 200, 100, 25);
-        frame.add(btnLimpar);
-        btnLimpar.addActionListener(e -> limpar(e));
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(lblId)
+                .addComponent(lblNome)
+                .addComponent(lblAutorizadoAcao)
+                .addComponent(lblSaldoAcao)
+                .addComponent(lblSaldoTituloDivida))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(textFieldId)
+                .addComponent(textFieldNome)
+                .addComponent(comboBoxTipo)
+                .addComponent(textFieldsaldoAcao)
+                .addComponent(textFieldsaldoTituloDivida)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(btnIncluir)
+                    .addComponent(btnVoltar)
+                    .addComponent(btnLimpar)))
+        );
 
+        layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblId)
+                .addComponent(textFieldId))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblNome)
+                .addComponent(textFieldNome))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblAutorizadoAcao)
+                .addComponent(comboBoxTipo))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblSaldoAcao)
+                .addComponent(textFieldsaldoAcao))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblSaldoTituloDivida)
+                .addComponent(textFieldsaldoTituloDivida))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(btnIncluir)
+                .addComponent(btnVoltar)
+                .addComponent(btnLimpar))
+        );
+
+        frame.pack();
         frame.setVisible(true);
     }
 
     private void incluir(ActionEvent actionEvent){
         try{
-            String id = textFieldId.getText();
+            long id = Long.parseLong(textFieldId.getText());
             String nome = textFieldNome.getText();
-            String autorizadoAcao = textFieldsaldoAcao.getText();
+            boolean autorizadoAcao = Boolean.parseBoolean((String) comboBoxTipo.getSelectedItem());
+            double saldoAcao = Double.parseDouble(textFieldsaldoAcao.getText());
+            double saldoTituloDivida = Double.parseDouble(textFieldsaldoTituloDivida.getText());
 
-            EntidadeOperadora entidadeOperadora = new EntidadeOperadora(Long.parseLong(id), nome, Boolean.parseBoolean(autorizadoAcao));
+            EntidadeOperadora entidadeOperadora = new EntidadeOperadora(id, nome, autorizadoAcao);
+            entidadeOperadora.creditarSaldoAcao(saldoAcao);
+            entidadeOperadora.creditarSaldoTituloDivida(saldoTituloDivida);
+
             RepositorioEntidadeOperadora repositorioEntidadeOperadora = new RepositorioEntidadeOperadora();
 
             if (repositorioEntidadeOperadora.incluir(entidadeOperadora)){
-                JOptionPane.showMessageDialog(frame, "Entidade Operação Incluida com Sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-            }else{
-                JOptionPane.showMessageDialog(frame, "Erro ao incluir entidade operação: ", "Erro", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Entidade Operadora Incluída com Sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Erro ao incluir entidade operadora: ", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-
-            
-
-        }catch(NumberFormatException ex){
+        } catch(NumberFormatException ex){
             JOptionPane.showMessageDialog(frame, "Erro ao converter valores numéricos: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch(Exception ex){
+            JOptionPane.showMessageDialog(frame, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        
     }
 
     private void limpar(ActionEvent actionEvent){
         textFieldId.setText("");
         textFieldNome.setText("");
+        comboBoxTipo.setSelectedIndex(0);
         textFieldsaldoAcao.setText("");
         textFieldsaldoTituloDivida.setText("");
     }
+
     private void voltar(ActionEvent actionEvent){
-        
+        frame.dispose();
+    }
+
+    public static void main(String[] args) {
+        new TelaIncluir();
     }
 }

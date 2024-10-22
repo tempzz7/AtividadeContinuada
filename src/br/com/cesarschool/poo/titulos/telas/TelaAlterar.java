@@ -1,80 +1,141 @@
 package br.com.cesarschool.poo.titulos.telas;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import br.com.cesarschool.poo.titulos.entidades.EntidadeOperadora;
+import br.com.cesarschool.poo.titulos.repositorios.RepositorioEntidadeOperadora;
 
 public class TelaAlterar {
-    public TelaAlterar(){
+    private JFrame frame;
+    private JTextField textFieldId;
+    private JTextField textFieldNome;
+    private JComboBox<String> comboBoxTipo;
+    private JTextField textFieldsaldoAcao;
+    private JTextField textFieldsaldoTituloDivida;
 
+    public TelaAlterar(){
         initialize();
     }
 
-    public static void main(String[] args) {
+    private void initialize (){
+        frame = new JFrame("Alterar Entidade Operadora");
+        frame.setSize(600, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        TelaIncluir tela4 = new TelaIncluir();
+        JLabel lblId = new JLabel("Id: ");
+        textFieldId = new JTextField();
+
+        JLabel lblNome = new JLabel("Nome: ");
+        textFieldNome = new JTextField();
+
+        JLabel lblAutorizadoAcao = new JLabel("Autorizado Ação: ");
+        String[] tipos = { "True", "False"};
+        comboBoxTipo = new JComboBox<>(tipos);
+
+        JLabel lblSaldoAcao = new JLabel("Saldo Ação: ");
+        textFieldsaldoAcao = new JTextField();
+
+        JLabel lblSaldoTituloDivida = new JLabel("Saldo Título Dívida: ");
+        textFieldsaldoTituloDivida = new JTextField();
+
+        JButton btnAlterar = new JButton("Alterar");
+        btnAlterar.addActionListener(this::alterar);
+
+        JButton btnVoltar = new JButton("Voltar");
+        btnVoltar.addActionListener(this::voltar);
+
+        JButton btnLimpar = new JButton("Limpar");
+        btnLimpar.addActionListener(this::limpar);
+
+        GroupLayout layout = new GroupLayout(frame.getContentPane());
+        frame.getContentPane().setLayout(layout);
+        layout.setAutoCreateGaps(true);
+        layout.setAutoCreateContainerGaps(true);
+
+        layout.setHorizontalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(lblId)
+                .addComponent(lblNome)
+                .addComponent(lblAutorizadoAcao)
+                .addComponent(lblSaldoAcao)
+                .addComponent(lblSaldoTituloDivida))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                .addComponent(textFieldId)
+                .addComponent(textFieldNome)
+                .addComponent(comboBoxTipo)
+                .addComponent(textFieldsaldoAcao)
+                .addComponent(textFieldsaldoTituloDivida)
+                .addGroup(layout.createSequentialGroup()
+                    .addComponent(btnAlterar)
+                    .addComponent(btnVoltar)
+                    .addComponent(btnLimpar)))
+        );
+
+        layout.setVerticalGroup(layout.createSequentialGroup()
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblId)
+                .addComponent(textFieldId))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblNome)
+                .addComponent(textFieldNome))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblAutorizadoAcao)
+                .addComponent(comboBoxTipo))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblSaldoAcao)
+                .addComponent(textFieldsaldoAcao))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(lblSaldoTituloDivida)
+                .addComponent(textFieldsaldoTituloDivida))
+            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                .addComponent(btnAlterar)
+                .addComponent(btnVoltar)
+                .addComponent(btnLimpar))
+        );
+
+        frame.pack();
+        frame.setVisible(true);
     }
 
-    private void initialize (){
-        JFrame frame = new JFrame();
-        frame.setTitle("Alterar Entidade Operação");
-        frame.setSize(600, 500);
-        frame.setLayout(null);
+    private void alterar(ActionEvent actionEvent){
+        try{
+            long id = Long.parseLong(textFieldId.getText());
+            String nome = textFieldNome.getText();
+            boolean autorizadoAcao = Boolean.parseBoolean((String) comboBoxTipo.getSelectedItem());
+            double saldoAcao = Double.parseDouble(textFieldsaldoAcao.getText());
+            double saldoTituloDivida = Double.parseDouble(textFieldsaldoTituloDivida.getText());
 
-        //id
-        JLabel lblId = new JLabel("Id: ");
-        lblId.setBounds(10, 20, 80, 25);
-        frame.add(lblId);
-        JTextField textFieldId = new JTextField();
-        textFieldId.setBounds(150, 20, 165, 25);
-        frame.add(textFieldId);
+            EntidadeOperadora entidadeOperadora = new EntidadeOperadora(id, nome, autorizadoAcao);
+            entidadeOperadora.creditarSaldoAcao(saldoAcao);
+            entidadeOperadora.creditarSaldoTituloDivida(saldoTituloDivida);
 
-        //nome
-        JLabel lblNome = new JLabel("Nome: ");
-        lblNome.setBounds(10, 50, 80, 25);
-        frame.add(lblNome);
-        JTextField textFieldNome = new JTextField();
-        textFieldNome.setBounds(150, 50, 165, 25);
-        frame.add(textFieldNome);
+            RepositorioEntidadeOperadora repositorioEntidadeOperadora = new RepositorioEntidadeOperadora();
 
-        //Autorizadoação
-        JLabel lblAutorizadoAcao = new JLabel("Autorizado Ação: ");
-        lblAutorizadoAcao.setBounds(10, 80, 80, 25);
-        frame.add(lblAutorizadoAcao);
-        String[] tipos = { "True", "False"};
-        JComboBox<String> comboBoxTipo = new JComboBox<>(tipos);
-        comboBoxTipo.setBounds(150, 80, 80, 25);
-        frame.add(comboBoxTipo);
+            if (repositorioEntidadeOperadora.alterar(entidadeOperadora)){
+                JOptionPane.showMessageDialog(frame, "Entidade Operadora Alterada com Sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(frame, "Erro ao alterar entidade operadora: ", "Erro", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch(NumberFormatException ex){
+            JOptionPane.showMessageDialog(frame, "Erro ao converter valores numéricos: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        } catch(Exception ex){
+            JOptionPane.showMessageDialog(frame, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 
-        //saldoacao
-        JLabel lblsaldoAcao = new JLabel("Saldo Ação: ");
-        lblsaldoAcao.setBounds(10, 110, 80, 25);
-        frame.add(lblsaldoAcao);
-        JTextField textFieldsaldoAcao = new JTextField();
-        textFieldsaldoAcao.setBounds(150, 110, 165, 25);
-        frame.add(textFieldsaldoAcao);
+    private void limpar(ActionEvent actionEvent){
+        textFieldId.setText("");
+        textFieldNome.setText("");
+        comboBoxTipo.setSelectedIndex(0);
+        textFieldsaldoAcao.setText("");
+        textFieldsaldoTituloDivida.setText("");
+    }
 
-        //saldoTituloDivida
-        JLabel lblsaldoTituloDivida = new JLabel("Saldo Título Dívida: ");
-        lblsaldoTituloDivida.setBounds(10, 140, 80, 25);
-        frame.add(lblsaldoTituloDivida);
-        JTextField textFieldsaldoTituloDivida = new JTextField();
-        textFieldsaldoTituloDivida.setBounds(150, 140, 165, 25);
-        frame.add(textFieldsaldoTituloDivida);
+    private void voltar(ActionEvent actionEvent){
+        frame.dispose();
+    }
 
-        //btnAlterar
-        JButton btnAlterar = new JButton("Alterar");
-        btnAlterar.setBounds(75, 200, 100, 25);
-        frame.add(btnAlterar);
-
-        //btnVoltar
-        JButton btnVoltar = new JButton("Voltar");
-        btnVoltar.setBounds(200, 200, 100, 25);
-        frame.add(btnVoltar);
-
-        //btnLimpar
-        JButton btnLimpar = new JButton("Limpar");
-        btnLimpar.setBounds(325, 200, 100, 25);
-        frame.add(btnLimpar);
-
-        frame.setVisible(true);
+    public static void main(String[] args) {
+        new TelaAlterar();
     }
 }

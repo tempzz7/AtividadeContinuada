@@ -32,8 +32,8 @@ public class MediatorAcao {
             return "O nome deve conter entre 10 e 100 caracteres.";
         }
 
-        if (acao.getDataDeValidade().isBefore(LocalDate.now().plusDays(30))) {
-            return "A data de validade deve estar a pelo menos 30 dias à frente da data atual.";
+        if (acao.getDataDeValidade().isBefore(LocalDate.now().plusDays(180))) {
+            return "A data de validade deve estar a pelo menos 180 dias à frente da data atual.";
         }
 
         if (acao.getValorUnitario() <= 0) {
@@ -43,16 +43,16 @@ public class MediatorAcao {
         return null;
     }
 
-    public String adicionar(Acao acao) {
+    public String incluir(Acao acao) {
         String erroValidacao = checarValidade(acao);
 
         if (erroValidacao != null) {
             return erroValidacao;
         }
 
-        boolean inseridoComSucesso = repositorioAcao.incluir(acao);
+        boolean incluidaComSucesso = repositorioAcao.incluir(acao);
 
-        return inseridoComSucesso ? null : "Ação já registrada.";
+        return incluidaComSucesso ? null : "Ação já existente.";
     }
 
     public String atualizar(Acao acao) {
@@ -69,7 +69,7 @@ public class MediatorAcao {
 
     public String remover(int identificador) {
         if (identificador <= 0 || identificador >= 100000) {
-            return "Identificador deve estar entre 1 e 99999.";
+            return "Identificador deve ser entre 1 e 99999.";
         }
 
         boolean removidaComSucesso = repositorioAcao.excluir(identificador);

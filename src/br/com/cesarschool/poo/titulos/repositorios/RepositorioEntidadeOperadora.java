@@ -1,117 +1,84 @@
 package br.com.cesarschool.poo.titulos.repositorios;
+
 import br.com.cesarschool.poo.titulos.entidades.EntidadeOperadora;
 import java.io.*;
-import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioEntidadeOperadora {
-
-    static Path text = Paths.get("EntidadeOperadora.txt");
+    private static final String FILE_NAME = "EntidadeOperadora.txt";
 
     public boolean incluir(EntidadeOperadora entidadeOperadora) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] atributos = line.split(";");
-                if (atributos[0].equals(String.valueOf(entidadeOperadora.getIdentificador()))) {
-                    return false;
-                }
+        List<EntidadeOperadora> entidades = lerArquivo();
+        for (EntidadeOperadora e : entidades) {
+            if (e.getIdentificador() == entidadeOperadora.getIdentificador()) {
+                return false; // Identificador repetido
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
         }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(text.toFile(), true))) {
-            String newLine = entidadeOperadora.getIdentificador() + " " + entidadeOperadora.getNome() + " " + entidadeOperadora.getAutorizadoAcao();
-            writer.write(newLine);
-            writer.newLine();
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
+        entidades.add(entidadeOperadora);
+        return gravarArquivo(entidades);
     }
 
     public boolean alterar(EntidadeOperadora entidadeOperadora) {
-        List<String> lines = new ArrayList<>();
-        boolean trocou = false;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] atributos = line.split(";");
-                if (atributos[0].equals(String.valueOf(entidadeOperadora.getIdentificador()))) {
-                    lines.add(entidadeOperadora.getIdentificador() + " " + entidadeOperadora.getNome() + " " + entidadeOperadora.getAutorizadoAcao());
-                    trocou = true;
-                } else {
-                    lines.add(line);
-                }
+        List<EntidadeOperadora> entidades = lerArquivo();
+        boolean encontrado = false;
+        for (int i = 0; i < entidades.size(); i++) {
+            if (entidades.get(i).getIdentificador() == entidadeOperadora.getIdentificador()) {
+                entidades.set(i, entidadeOperadora);
+                encontrado = true;
+                break;
             }
-        } catch (IOException e) {
-            return false;
         }
-
-        if (trocou) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(text.toFile(), false))) {
-                for (String line : lines) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-                return true;
-            } catch (IOException e) {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        return encontrado && gravarArquivo(entidades);
     }
 
     public boolean excluir(int identificador) {
-        List<String> lines = new ArrayList<>();
-        boolean excluido = false;
-
-        try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] atributos = line.split(";");
-                if (Integer.parseInt(atributos[0]) != identificador) {
-                    lines.add(line);
-                } else {
-                    excluido = true;
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-
-        if (excluido) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(text.toFile(), false))) {
-                for (String line : lines) {
-                    writer.write(line);
-                    writer.newLine();
-                }
-                return true;
-            } catch (IOException e) {
-                return false;
-            }
-        } else {
-            return false;
-        }
+        List<EntidadeOperadora> entidades = lerArquivo();
+        boolean encontrado = entidades.removeIf(e -> e.getIdentificador() == identificador);
+        return encontrado && gravarArquivo(entidades);
     }
 
-    static public EntidadeOperadora buscar(int identificador) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] atributos = line.split(";");
-                if (Integer.parseInt(atributos[0]) == identificador) {
-                    return new EntidadeOperadora(Integer.parseInt(atributos[0]), atributos[1], Double.parseDouble(atributos[2]));
-                }
+    public EntidadeOperadora buscar(int identificador) {
+        List<EntidadeOperadora> entidades = lerArquivo();
+        for (EntidadeOperadora entidade : entidades) {
+            if (entidade.getIdentificador() == identificador) {
+                return entidade;
+            }
+        }
+        return null;
+    }
+
+    private List<EntidadeOperadora> lerArquivo() {
+        List<EntidadeOperadora> entidades = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
+            String linha;
+            while ((linha = br.readLine()) != null) {
+                String[] dados = linha.split(";");
+                EntidadeOperadora entidade = new EntidadeOperadora(
+                    Long.parseLong(dados[0]),
+                    dados[1],
+                    Boolean.parseBoolean(dados[2])
+                );
+                entidade.creditarSaldoAcao(Double.parseDouble(dados[3]));
+                entidade.creditarSaldoTituloDivida(Double.parseDouble(dados[4]));
+                entidades.add(entidade);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return entidades;
+    }
+
+    private boolean gravarArquivo(List<EntidadeOperadora> entidades) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
+            for (EntidadeOperadora entidade : entidades) {
+                bw.write(entidade.getIdentificador() + ";" + entidade.getNome() + ";" + entidade.getAutorizadoAcao() + ";" + entidade.getSaldoAcao() + ";" + entidade.getSaldoTituloDivida());
+                bw.newLine();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

@@ -2,40 +2,49 @@ package br.com.cesarschool.poo.titulos.entidades;
 
 import java.time.LocalDateTime;
 
-
 public class Transacao {
-    private EntidadeOperadora entidadeCredito;
-    private EntidadeOperadora entidadeDebito;
+    private long id;
+    private LocalDateTime dataHoraOperacao;
+    private double valorOperacao;
+    private EntidadeOperadora entidadeCredora;
+    private EntidadeOperadora entidadeDevedora;
     private Acao acao;
     private TituloDivida tituloDivida;
-    private double valorOperacao;
-    private LocalDateTime dataHoraOperacao;
 
-    public Transacao (EntidadeOperadora entidadeCredito, EntidadeOperadora entidadeDebito,Acao acao, TituloDivida tituloDivida, double valorOperacao, LocalDateTime dataHoraOperacao) {
-        this.entidadeCredito = entidadeCredito;
-        this.entidadeDebito = entidadeDebito;
+    public Transacao(EntidadeOperadora entidadeCredora, EntidadeOperadora entidadeDevedora, Acao acao, TituloDivida tituloDivida, double valorOperacao, LocalDateTime dataHoraOperacao) {
+        this.entidadeCredora = entidadeCredora;
+        this.entidadeDevedora = entidadeDevedora;
         this.acao = acao;
         this.tituloDivida = tituloDivida;
         this.valorOperacao = valorOperacao;
         this.dataHoraOperacao = dataHoraOperacao;
     }
-    public EntidadeOperadora getEntidadeCredito() {
-        return entidadeCredito;
+
+    public long getId() {
+        return id;
     }
-    public EntidadeOperadora getEntidadeDebito() {
-        return entidadeDebito;
-    }
-    public Acao getAcao() {
-        return acao;
-    }
-    public TituloDivida getTituloDivida() {
-        return tituloDivida;
-    }
-    public double getValorOperacao() {
-        return valorOperacao;
-    }
+
     public LocalDateTime getDataHoraOperacao() {
         return dataHoraOperacao;
     }
 
+    public double getValorOperacao() {
+        return valorOperacao;
+    }
+
+    public EntidadeOperadora getEntidadeCredora() {
+        return entidadeCredora;
+    }
+
+    public EntidadeOperadora getEntidadeDevedora() {
+        return entidadeDevedora;
+    }
+
+    public Acao getAcao() {
+        return acao;
+    }
+
+    public TituloDivida getTituloDivida() {
+        return tituloDivida;
+    }
 }

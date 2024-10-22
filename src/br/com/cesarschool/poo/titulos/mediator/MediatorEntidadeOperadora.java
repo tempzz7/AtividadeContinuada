@@ -98,17 +98,17 @@ public class MediatorEntidadeOperadora {
         return null;
     }
 
-    private boolean existeIdentificador(int identificador) {
+    private boolean existeIdentificador(long identificador) {
         try (BufferedReader leitor = new BufferedReader(new FileReader(caminhoArquivo.toFile()))) {
             String linha;
             while ((linha = leitor.readLine()) != null) {
                 String[] dados = linha.split(";");
-                if (dados[0].equals(String.valueOf(identificador))) {
-                    return true; 
+                if (Long.parseLong(dados[0]) == identificador) {
+                    return true;
                 }
             }
         } catch (IOException e) {
-            return false;
+            e.printStackTrace();
         }
         return false;
     }
