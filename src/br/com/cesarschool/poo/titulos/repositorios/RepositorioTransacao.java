@@ -1,102 +1,81 @@
 package br.com.cesarschool.poo.titulos.repositorios;
-
 import br.com.cesarschool.poo.titulos.entidades.*;
 import java.io.*;
+import java.nio.file.*;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class RepositorioTransacao {
-    private static final String FILE_NAME = "Transacao.txt";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+	private static final Path text = Paths.get("Transacao.txt");
+	public boolean incluir(Transacao transacao) {
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(text.toFile(), true))) {
+			writer.write(transacao.getEntidadeCredito().getIdentificador() + ";"
+					+ transacao.getEntidadeCredito().getNome() + ";"
+					+ transacao.getEntidadeCredito().getAutorizadoAcao() + ";"
+					+ transacao.getEntidadeCredito().getSaldoAcao() + ";"
+					+ transacao.getEntidadeCredito().getSaldoTituloDivida() + ";"
+					+ transacao.getEntidadeDebito().getIdentificador() + ";"
+					+ transacao.getEntidadeDebito().getNome() + ";"
+					+ transacao.getEntidadeDebito().getAutorizadoAcao() + ";"
+					+ transacao.getEntidadeDebito().getSaldoAcao() + ";"
+					+ transacao.getEntidadeDebito().getSaldoTituloDivida() + ";"
+					+ (transacao.getAcao() != null ? transacao.getAcao().getIdentificador() + ";"
+					+ transacao.getAcao().getNome() + ";"
+					+ transacao.getAcao().getDataDeValidade() + ";"
+					+ transacao.getAcao().getValorUnitario() + ";"
+					: "null;null;null;null;")
+					+ (transacao.getTituloDivida() != null ? transacao.getTituloDivida().getIdentificador() + ";"
+					+ transacao.getTituloDivida().getNome() + ";"
+					+ transacao.getTituloDivida().getDataDeValidade() + ";"
+					+ transacao.getTituloDivida().getTaxaJuros()
+					: "null;null;null;null;")
+					+ ";" + transacao.getValorOperacao() + ";"
+					+ transacao.getDataHoraOperacao());
+			writer.newLine();
+			return true;
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
-    private RepositorioEntidadeOperadora repoEntidade = new RepositorioEntidadeOperadora();
-    private RepositorioAcao repoAcao = new RepositorioAcao();
-    private RepositorioTituloDivida repoTitulo = new RepositorioTituloDivida();
+	public List<Transacao> buscarPorEntidade(int identificador, boolean isCredito) {
+		List<Transacao> transacoes = new ArrayList<>();
+		try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
+			String linha;
+			while ((linha = reader.readLine()) != null) {
+				String[] dados = linha.split(";");
 
-    // Método para incluir uma transação no repositório
-    public boolean incluir(Transacao transacao) {
-        List<Transacao> transacoes = lerArquivo();
-        transacoes.add(transacao);
-        return gravarArquivo(transacoes);
-    }
+				Acao acao = null;
+				if (!"null".equals(dados[10])) {
+					acao = RepositorioAcao.buscar(Integer.parseInt(dados[10]));
+				}
 
-    // Método para buscar todas as transações
-    public List<Transacao> buscarTodas() {
-        return lerArquivo();
-    }
+				TituloDivida tituloDivida = null;
+				if (!"null".equals(dados[14])) {
+					tituloDivida = RepositorioTituloDivida.buscar(Integer.parseInt(dados[14]));
+				}
+				EntidadeOperadora entidadeDebito = RepositorioEntidadeOperadora.buscar(Integer.parseInt(dados[5]));
+				EntidadeOperadora entidadeCredito = RepositorioEntidadeOperadora.buscar(Integer.parseInt(dados[0]));
+				Transacao transacao = new Transacao(entidadeCredito, entidadeDebito, acao, tituloDivida, Double.parseDouble(dados[18]), LocalDateTime.parse(dados[19]));
+				if ((isCredito && transacao.getEntidadeCredito().getIdentificador() == identificador) ||
+						(!isCredito && transacao.getEntidadeDebito().getIdentificador() == identificador)) {
+					transacoes.add(transacao);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return transacoes;
+	}
 
-    // Método para buscar transações onde a entidade é credora
-    public List<Transacao> buscarPorEntidadeCredora(int identificadorEntidadeCredora) {
-        List<Transacao> transacoes = lerArquivo();
-        List<Transacao> transacoesCredoras = new ArrayList<>();
-        for (Transacao transacao : transacoes) {
-            if (transacao.getEntidadeCredito().getIdentificador() == identificadorEntidadeCredora) {
-                transacoesCredoras.add(transacao);
-            }
-        }
-        return transacoesCredoras;
-    }
+	public List<Transacao> buscarPorEntidadeCredora(int identificadorEntidadeCredito) {
+		return buscarPorEntidade(identificadorEntidadeCredito, true);
+	}
 
-    // Método para buscar transações onde a entidade é devedora
-    public List<Transacao> buscarPorEntidadeDevedora(int identificadorEntidadeDevedora) {
-        List<Transacao> transacoes = lerArquivo();
-        List<Transacao> transacoesDevedoras = new ArrayList<>();
-        for (Transacao transacao : transacoes) {
-            if (transacao.getEntidadeDebito().getIdentificador() == identificadorEntidadeDevedora) {
-                transacoesDevedoras.add(transacao);
-            }
-        }
-        return transacoesDevedoras;
-    }
-
-    // Método privado para ler o arquivo de transações
-    private List<Transacao> lerArquivo() {
-        List<Transacao> transacoes = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
-            String linha;
-            while ((linha = br.readLine()) != null) {
-                String[] dados = linha.split(";");
-
-                // Buscando entidades relacionadas pelos identificadores
-                EntidadeOperadora entidadeCredito = repoEntidade.buscar(Long.parseLong(dados[0]));
-                EntidadeOperadora entidadeDebito = repoEntidade.buscar(Long.parseLong(dados[1]));
-                Acao acao = repoAcao.buscar(Integer.parseInt(dados[2]));
-                TituloDivida tituloDivida = repoTitulo.buscar(Integer.parseInt(dados[3]));
-
-                // Reconstruindo a data e o valor da operação
-                double valorOperacao = Double.parseDouble(dados[4]);
-                LocalDateTime dataHoraOperacao = LocalDateTime.parse(dados[5], DATE_TIME_FORMATTER);
-
-                // Criando a transação com os dados reconstruídos
-                Transacao transacao = new Transacao(entidadeCredito, entidadeDebito, acao, tituloDivida, valorOperacao, dataHoraOperacao);
-                transacoes.add(transacao);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return transacoes;
-    }
-
-    // Método privado para gravar as transações no arquivo
-    private boolean gravarArquivo(List<Transacao> transacoes) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (Transacao transacao : transacoes) {
-                // Gravando os dados da transação no formato:
-                // idEntidadeCredito;idEntidadeDebito;idAcao;idTituloDivida;valorOperacao;dataHoraOperacao
-                bw.write(transacao.getEntidadeCredito().getIdentificador() + ";"
-                        + transacao.getEntidadeDebito().getIdentificador() + ";"
-                        + (transacao.getAcao() != null ? transacao.getAcao().getIdentificador() : "null") + ";"
-                        + (transacao.getTituloDivida() != null ? transacao.getTituloDivida().getIdentificador() : "null") + ";"
-                        + transacao.getValorOperacao() + ";"
-                        + transacao.getDataHoraOperacao().format(DATE_TIME_FORMATTER));
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
+	public List<Transacao> buscarPorEntidadeDevedora(int identificadorEntidadeDebito) {
+		return buscarPorEntidade(identificadorEntidadeDebito, false);
+	}
 }

@@ -1,84 +1,118 @@
 package br.com.cesarschool.poo.titulos.repositorios;
-
 import br.com.cesarschool.poo.titulos.entidades.Acao;
 import java.io.*;
+import java.nio.file.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RepositorioAcao {
-    private static final String FILE_NAME = "Acao.txt";
+	static Path text = Paths.get("Acao.txt");
 
-    public boolean incluir(Acao acao) {
-        List<Acao> acoes = lerArquivo();
-        for (Acao a : acoes) {
-            if (a.getIdentificador() == acao.getIdentificador()) {
-                return false; // Identificador repetido
-            }
-        }
-        acoes.add(acao);
-        return gravarArquivo(acoes);
-    }
+	public boolean incluir(Acao acao) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] lines = line.split(";");
+				if (lines[0].equals(String.valueOf(acao.getIdentificador()))) {
+					return false;
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			return false;
+		}
 
-    public boolean alterar(Acao acao) {
-        List<Acao> acoes = lerArquivo();
-        boolean encontrado = false;
-        for (int i = 0; i < acoes.size(); i++) {
-            if (acoes.get(i).getIdentificador() == acao.getIdentificador()) {
-                acoes.set(i, acao);
-                encontrado = true;
-                break;
-            }
-        }
-        return encontrado && gravarArquivo(acoes);
-    }
+		try (BufferedWriter writer = new BufferedWriter(new FileWriter(text.toFile(), true))) {
+			String newLine = acao.getIdentificador() + " " + acao.getNome() + " " + acao.getDataDeValidade() + " " + acao.getValorUnitario();
+			writer.write(newLine);
+			writer.newLine();
+			return true;
+		} catch (IOException e) {
+			return false;
+		}
+	}
 
-    public boolean excluir(int identificador) {
-        List<Acao> acoes = lerArquivo();
-        boolean encontrado = acoes.removeIf(a -> a.getIdentificador() == identificador);
-        return encontrado && gravarArquivo(acoes);
-    }
+	public boolean alterar(Acao acao) {
+		List<String> lines = new ArrayList<>();
+		boolean trocou = false;
 
-    public Acao buscar(int identificador) {
-        List<Acao> acoes = lerArquivo();
-        for (Acao acao : acoes) {
-            if (acao.getIdentificador() == identificador) {
-                return acao;
-            }
-        }
-        return null;
-    }
+		try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] atributos = line.split(";");
+				if (atributos[0].equals(String.valueOf(acao.getIdentificador()))) {
+					lines.add(acao.getIdentificador() + " " + acao.getNome() + " " + acao.getDataDeValidade() + " " + acao.getValorUnitario());
+					trocou = true;
+				} else {
+					lines.add(line);
+				}
+			}
+		} catch (IOException e) {
+			return false;
+		}
 
-    private List<Acao> lerArquivo() {
-        List<Acao> acoes = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
-            String linha;
-            while ((linha = br.readLine()) != null) {
-                String[] dados = linha.split(";");
-                Acao acao = new Acao(
-                    Integer.parseInt(dados[0]),
-                    dados[1],
-                    LocalDate.parse(dados[2]),
-                    Double.parseDouble(dados[3])
-                );
-                acoes.add(acao);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return acoes;
-    }
+		if (trocou) {
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(text.toFile(), false))) {
+				for (String line : lines) {
+					writer.write(line);
+					writer.newLine();
+				}
+				return true;
+			} catch (IOException e) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
 
-    private boolean gravarArquivo(List<Acao> acoes) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(FILE_NAME))) {
-            for (Acao acao : acoes) {
-                bw.write(acao.getIdentificador() + ";" + acao.getNome() + ";" + acao.getDataValidade() + ";" + acao.getValorUnitario());
-                bw.newLine();
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-        return true;
-    }
+	public boolean excluir(int identificador) {
+		List<String> lines = new ArrayList<>();
+		boolean excluido = false;
+
+		try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] atributos = line.split(";");
+				if (Integer.parseInt(atributos[0]) != identificador) {
+					lines.add(line);
+				} else {
+					excluido = true;
+				}
+			}
+		} catch (IOException e) {
+			return false;
+		}
+
+		if (excluido) {
+			try (BufferedWriter writer = new BufferedWriter(new FileWriter(text.toFile(), false))) {
+				for (String line : lines) {
+					writer.write(line);
+					writer.newLine();
+				}
+				return true;
+			} catch (IOException e) {
+				return false;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	static public Acao buscar(int identificador) {
+		try (BufferedReader reader = new BufferedReader(new FileReader(text.toFile()))) {
+			String line;
+			while ((line = reader.readLine()) != null) {
+				String[] lines = line.split(";");
+				if (Integer.parseInt(lines[0]) == identificador) {
+					return new Acao(Integer.parseInt(lines[0]), lines[1],LocalDate.parse(lines[2]), Double.parseDouble(lines[3])
+					);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }
