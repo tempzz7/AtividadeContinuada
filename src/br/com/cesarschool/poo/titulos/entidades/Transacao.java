@@ -3,33 +3,21 @@ package br.com.cesarschool.poo.titulos.entidades;
 import java.time.LocalDateTime;
 
 public class Transacao {
-    private long id;
-    private LocalDateTime dataHoraOperacao;
-    private double valorOperacao;
     private EntidadeOperadora entidadeCredora;
     private EntidadeOperadora entidadeDevedora;
-    private Acao acao;
-    private TituloDivida tituloDivida;
+    private double valorOperacao;
+    private LocalDateTime dataHoraOperacao;
 
-    public Transacao(EntidadeOperadora entidadeCredora, EntidadeOperadora entidadeDevedora, Acao acao, TituloDivida tituloDivida, double valorOperacao, LocalDateTime dataHoraOperacao) {
-        this.entidadeCredora = entidadeCredora;
-        this.entidadeDevedora = entidadeDevedora;
-        this.acao = acao;
-        this.tituloDivida = tituloDivida;
-        this.valorOperacao = valorOperacao;
-        this.dataHoraOperacao = dataHoraOperacao;
+    public Transacao(EntidadeOperadora credora, EntidadeOperadora devedora, String descricao, String status, double valor, LocalDateTime dataHora) {
+        this.entidadeCredora = credora;
+        this.entidadeDevedora = devedora;
+        this.valorOperacao = valor;
+        this.dataHoraOperacao = dataHora;
     }
 
-    public long getId() {
-        return id;
-    }
-
-    public LocalDateTime getDataHoraOperacao() {
-        return dataHoraOperacao;
-    }
-
-    public double getValorOperacao() {
-        return valorOperacao;
+    public void realizarTransacao() {
+        entidadeCredora.creditarSaldoTituloDivida(valorOperacao);
+        entidadeDevedora.debitarSaldoTituloDivida(valorOperacao);
     }
 
     public EntidadeOperadora getEntidadeCredora() {
@@ -40,11 +28,11 @@ public class Transacao {
         return entidadeDevedora;
     }
 
-    public Acao getAcao() {
-        return acao;
+    public double getValorOperacao() {
+        return valorOperacao;
     }
 
-    public TituloDivida getTituloDivida() {
-        return tituloDivida;
+    public LocalDateTime getDataHoraOperacao() {
+        return dataHoraOperacao;
     }
 }

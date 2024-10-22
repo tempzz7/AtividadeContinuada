@@ -12,7 +12,7 @@ public class RepositorioEntidadeOperadora {
         List<EntidadeOperadora> entidades = lerArquivo();
         for (EntidadeOperadora e : entidades) {
             if (e.getIdentificador() == entidadeOperadora.getIdentificador()) {
-                return false; // Identificador repetido
+                return false; 
             }
         }
         entidades.add(entidadeOperadora);
@@ -38,7 +38,7 @@ public class RepositorioEntidadeOperadora {
         return encontrado && gravarArquivo(entidades);
     }
 
-    public EntidadeOperadora buscar(int identificador) {
+    public EntidadeOperadora buscar(long identificador) {
         List<EntidadeOperadora> entidades = lerArquivo();
         for (EntidadeOperadora entidade : entidades) {
             if (entidade.getIdentificador() == identificador) {
@@ -50,6 +50,16 @@ public class RepositorioEntidadeOperadora {
 
     private List<EntidadeOperadora> lerArquivo() {
         List<EntidadeOperadora> entidades = new ArrayList<>();
+        File file = new File(FILE_NAME);
+        if (!file.exists()) {
+            try {
+                file.createNewFile(); 
+            } catch (IOException e) {
+                e.printStackTrace();
+                return entidades;
+            }
+        }
+
         try (BufferedReader br = new BufferedReader(new FileReader(FILE_NAME))) {
             String linha;
             while ((linha = br.readLine()) != null) {
@@ -59,8 +69,8 @@ public class RepositorioEntidadeOperadora {
                     dados[1],
                     Boolean.parseBoolean(dados[2])
                 );
-                entidade.creditarSaldoAcao(Double.parseDouble(dados[3]));
-                entidade.creditarSaldoTituloDivida(Double.parseDouble(dados[4]));
+                entidade.setSaldoAcao(Double.parseDouble(dados[3]));
+                entidade.setSaldoTituloDivida(Double.parseDouble(dados[4]));
                 entidades.add(entidade);
             }
         } catch (IOException e) {

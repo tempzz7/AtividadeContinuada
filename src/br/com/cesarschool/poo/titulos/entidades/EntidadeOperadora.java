@@ -35,6 +35,14 @@ public class EntidadeOperadora {
         return saldoTituloDivida;
     }
 
+    public void setSaldoAcao(double saldoAcao) {
+        this.saldoAcao = saldoAcao;
+    }
+
+    public void setSaldoTituloDivida(double saldoTituloDivida) {
+        this.saldoTituloDivida = saldoTituloDivida;
+    }
+
     public void creditarSaldoAcao(double valor) {
         this.saldoAcao += valor;
     }

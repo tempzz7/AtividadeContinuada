@@ -10,14 +10,14 @@ public class TelaIncluir {
     private JTextField textFieldId;
     private JTextField textFieldNome;
     private JComboBox<String> comboBoxTipo;
-    private JTextField textFieldsaldoAcao;
-    private JTextField textFieldsaldoTituloDivida;
+    private JTextField textFieldSaldoAcao;
+    private JTextField textFieldSaldoTituloDivida;
 
-    public TelaIncluir(){
+    public TelaIncluir() {
         initialize();
     }
 
-    private void initialize (){
+    private void initialize() {
         frame = new JFrame("Incluir Entidade Operadora");
         frame.setSize(600, 400);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,14 +29,14 @@ public class TelaIncluir {
         textFieldNome = new JTextField();
 
         JLabel lblAutorizadoAcao = new JLabel("Autorizado Ação: ");
-        String[] tipos = { "True", "False"};
+        String[] tipos = {"True", "False"};
         comboBoxTipo = new JComboBox<>(tipos);
 
         JLabel lblSaldoAcao = new JLabel("Saldo Ação: ");
-        textFieldsaldoAcao = new JTextField();
+        textFieldSaldoAcao = new JTextField();
 
         JLabel lblSaldoTituloDivida = new JLabel("Saldo Título Dívida: ");
-        textFieldsaldoTituloDivida = new JTextField();
+        textFieldSaldoTituloDivida = new JTextField();
 
         JButton btnIncluir = new JButton("Incluir");
         btnIncluir.addActionListener(this::incluir);
@@ -53,57 +53,57 @@ public class TelaIncluir {
         layout.setAutoCreateContainerGaps(true);
 
         layout.setHorizontalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(lblId)
-                .addComponent(lblNome)
-                .addComponent(lblAutorizadoAcao)
-                .addComponent(lblSaldoAcao)
-                .addComponent(lblSaldoTituloDivida))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                .addComponent(textFieldId)
-                .addComponent(textFieldNome)
-                .addComponent(comboBoxTipo)
-                .addComponent(textFieldsaldoAcao)
-                .addComponent(textFieldsaldoTituloDivida)
-                .addGroup(layout.createSequentialGroup()
-                    .addComponent(btnIncluir)
-                    .addComponent(btnVoltar)
-                    .addComponent(btnLimpar)))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(lblId)
+                        .addComponent(lblNome)
+                        .addComponent(lblAutorizadoAcao)
+                        .addComponent(lblSaldoAcao)
+                        .addComponent(lblSaldoTituloDivida))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
+                        .addComponent(textFieldId)
+                        .addComponent(textFieldNome)
+                        .addComponent(comboBoxTipo)
+                        .addComponent(textFieldSaldoAcao)
+                        .addComponent(textFieldSaldoTituloDivida)
+                        .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnIncluir)
+                                .addComponent(btnVoltar)
+                                .addComponent(btnLimpar)))
         );
 
         layout.setVerticalGroup(layout.createSequentialGroup()
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(lblId)
-                .addComponent(textFieldId))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(lblNome)
-                .addComponent(textFieldNome))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(lblAutorizadoAcao)
-                .addComponent(comboBoxTipo))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(lblSaldoAcao)
-                .addComponent(textFieldsaldoAcao))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(lblSaldoTituloDivida)
-                .addComponent(textFieldsaldoTituloDivida))
-            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                .addComponent(btnIncluir)
-                .addComponent(btnVoltar)
-                .addComponent(btnLimpar))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblId)
+                        .addComponent(textFieldId))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblNome)
+                        .addComponent(textFieldNome))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblAutorizadoAcao)
+                        .addComponent(comboBoxTipo))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblSaldoAcao)
+                        .addComponent(textFieldSaldoAcao))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(lblSaldoTituloDivida)
+                        .addComponent(textFieldSaldoTituloDivida))
+                .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
+                        .addComponent(btnIncluir)
+                        .addComponent(btnVoltar)
+                        .addComponent(btnLimpar))
         );
 
         frame.pack();
         frame.setVisible(true);
     }
 
-    private void incluir(ActionEvent actionEvent){
-        try{
+    private void incluir(ActionEvent actionEvent) {
+        try {
             long id = Long.parseLong(textFieldId.getText());
             String nome = textFieldNome.getText();
             boolean autorizadoAcao = Boolean.parseBoolean((String) comboBoxTipo.getSelectedItem());
-            double saldoAcao = Double.parseDouble(textFieldsaldoAcao.getText());
-            double saldoTituloDivida = Double.parseDouble(textFieldsaldoTituloDivida.getText());
+            double saldoAcao = Double.parseDouble(textFieldSaldoAcao.getText());
+            double saldoTituloDivida = Double.parseDouble(textFieldSaldoTituloDivida.getText());
 
             EntidadeOperadora entidadeOperadora = new EntidadeOperadora(id, nome, autorizadoAcao);
             entidadeOperadora.creditarSaldoAcao(saldoAcao);
@@ -111,27 +111,27 @@ public class TelaIncluir {
 
             RepositorioEntidadeOperadora repositorioEntidadeOperadora = new RepositorioEntidadeOperadora();
 
-            if (repositorioEntidadeOperadora.incluir(entidadeOperadora)){
+            if (repositorioEntidadeOperadora.incluir(entidadeOperadora)) {
                 JOptionPane.showMessageDialog(frame, "Entidade Operadora Incluída com Sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 JOptionPane.showMessageDialog(frame, "Erro ao incluir entidade operadora: ", "Erro", JOptionPane.ERROR_MESSAGE);
             }
-        } catch(NumberFormatException ex){
+        } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(frame, "Erro ao converter valores numéricos: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch(Exception ex){
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(frame, "Erro: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    private void limpar(ActionEvent actionEvent){
+    private void limpar(ActionEvent actionEvent) {
         textFieldId.setText("");
         textFieldNome.setText("");
         comboBoxTipo.setSelectedIndex(0);
-        textFieldsaldoAcao.setText("");
-        textFieldsaldoTituloDivida.setText("");
+        textFieldSaldoAcao.setText("");
+        textFieldSaldoTituloDivida.setText("");
     }
 
-    private void voltar(ActionEvent actionEvent){
+    private void voltar(ActionEvent actionEvent) {
         frame.dispose();
     }
 
